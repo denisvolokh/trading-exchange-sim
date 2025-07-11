@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Exchange Order Book</title>
+        <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"></script>
+    </head>
+    <body>
+        <h1>Exchange Emulator</h1>
+
+        <div
+            id="orderbook"
+            hx-get="/ui/orderbook"
+            hx-trigger="load, order-submitted, sse:update"
+            hx-swap="outerHTML"
+        >
+            Loading order book...
+        </div>
+
+        <!-- <div hx-get="/ui/form" hx-trigger="load" hx-swap="outerHTML"></div> -->
+        {% include "order_form.html" %}
+
+        <script>
+            document.body.addEventListener("order-submitted", () => {
+                console.log("[HTMX] Custom event: order-submitted triggered");
+            });
+
+            document.body.addEventListener("htmx:afterSwap", (e) => {
+                if (e.target.id === "orderbook") {
+                    console.log("[HTMX] Order book has been updated");
+                }
+            });
+
+            const evtSource = new EventSource("/sse");
+            evtSource.onmessage = () => htmx.trigger("body", "sse:update");
+
+            console.log("Test");
+        </script>
+    </body>
+</html>

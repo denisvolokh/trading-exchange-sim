@@ -4,8 +4,9 @@ from app.models import OrderProjection, OrderSide
 from app.domain_events import OrderPlacedV1, OrderCancelledV1
 from app.projections import apply_event_to_order_book, apply_event_to_trades
 from app.matching_engine import try_match_order
+from app.schemas import OrderCreateRequest
 
-async def place_order_command(db: AsyncSession, order):
+async def place_order_command(db: AsyncSession, order: OrderCreateRequest):
     event = OrderPlacedV1(
         order_id=order.order_id,
         side=order.side,

@@ -1,0 +1,45 @@
+from fastapi import APIRouter, Request, Form, Depends
+from fastapi.responses import HTMLResponse
+from app.database import get_db
+from app.queries import get_order_book
+from app.commands import place_order_command
+from app.models import OrderSide
+from app.ui.dependencies import templates
+from app.schemas import OrderCreateRequest
+from uuid import uuid4
+
+ui_router = APIRouter()
+
+@ui_router.get("/ui", response_class=HTMLResponse)
+async def ui_page(request: Request):
+    return templates.TemplateResponse("orderbook.html", {"request": request})
+
+@ui_router.get("/ui/orderbook", response_class=HTMLResponse)
+async def ui_orderbook(request: Request, db=Depends(get_db)):
+    data = await get_order_book(db)
+    return templates.TemplateResponse("orderbook_partial.html", {"request": request, **data})
+
+# @ui_router.get("/ui/form", response_class=HTMLResponse)
+# async def ui_form(request: Request):
+#     return templates.TemplateResponse("order_form.html", {"request": request})
+
+@ui_router.post("/ui/order")
+async def submit_order(
+    side: str = Form(...),
+    price: float = Form(...),
+    quantity: float = Form(...),
+    db=Depends(get_db)
+):
+    order = OrderCreateRequest(
+        order_id=int(uuid4().int >> 96),
+        side=side,
+        price=price,
+        quantity=quantity
+    )
+    await place_order_command(db, order)
+    return HTMLResponse(
+        content="""
+        <div id="status-message" hx-swap-oob="true">✅ Order submitted!</div>
+        """,
+        status_code=200
+    )

@@ -1,0 +1,27 @@
+services:
+  api:
+    build: .
+    container_name: exchange-api
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - nats
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  subscriber:
+    build: .
+    container_name: event-logger
+    command: ["python", "app/messaging/nats_subscriber.py"]
+    depends_on:
+      - nats
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  nats:
+    image: nats:latest
+    container_name: nats-server
+    ports:
+      - "4222:4222"

@@ -1,0 +1,30 @@
+<div id="order-form">
+    <h2>Submit New Order</h2>
+
+    <form
+        hx-post="/ui/order"
+        hx-swap="none"
+        hx-on::after-request="htmx.trigger('#orderbook', 'order-submitted')"
+    >
+        <label
+            >Side:
+            <select name="side">
+                <option value="buy">BUY</option>
+                <option value="sell">SELL</option>
+            </select> </label
+        ><br />
+
+        <label
+            >Price:
+            <input type="number" step="0.01" name="price" required /></label
+        ><br />
+        <label
+            >Quantity:
+            <input type="number" step="0.01" name="quantity" required /></label
+        ><br />
+
+        <button type="submit">Submit Order</button>
+    </form>
+
+    <div id="status-message"></div>
+</div>

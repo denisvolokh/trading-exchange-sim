@@ -1,0 +1,20 @@
+<div
+    id="orderbook"
+    hx-get="/ui/orderbook"
+    hx-trigger="order-submitted, sse:update"
+    hx-swap="outerHTML"
+>
+    <h3>Buy Orders</h3>
+    <ul>
+        {% for order in bids %}
+        <li>{{ order.quantity }} @ {{ order.price }}</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Sell Orders</h3>
+    <ul>
+        {% for order in asks %}
+        <li>{{ order.quantity }} @ {{ order.price }}</li>
+        {% endfor %}
+    </ul>
+</div>

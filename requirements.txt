@@ -5,3 +5,8 @@ aiosqlite
 nats-py
 pydantic
 python-dotenv
+jinja2
+httpx
+pytest
+pytest-asyncio
+python-multipart
