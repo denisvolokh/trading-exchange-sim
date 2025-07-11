@@ -35,7 +35,9 @@ async def get_recent_trades(db: AsyncSession) -> list[TradeEntry]:
             buy_order_id=t.buy_order_id,
             sell_order_id=t.sell_order_id,
             price=t.price,
-            quantity=t.quantity
+            quantity=t.quantity,
+            side=t.side,
+            timestamp=t.timestamp
         )
         for t in trades
     ]

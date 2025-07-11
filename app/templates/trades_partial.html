@@ -1,0 +1,23 @@
+<div
+    id="trades"
+    hx-get="/ui/trades"
+    hx-trigger="trade-matched, sse:trade"
+    hx-swap="outerHTML"
+    class="max-w-md mx-auto mt-8 bg-white shadow rounded border border-gray-200"
+>
+    <h3 class="text-lg font-semibold text-center py-3 border-b text-gray-700">
+        💱 Recent Trades
+    </h3>
+    <ul class="max-h-64 overflow-y-auto px-4 py-2 space-y-1">
+        {% for trade in trades %}
+        <li
+            class="flex justify-between text-sm px-2 py-1 rounded {% if trade.side == 'buy' %}bg-green-50 text-green-800{% else %}bg-red-50 text-red-800{% endif %}"
+        >
+            <span>{{ trade.quantity }} @ {{ trade.price }}</span>
+            <span class="text-gray-400 text-xs">{{ trade.time }}</span>
+        </li>
+        {% endfor %} {% if not trades %}
+        <li class="text-center text-gray-400 italic">No trades yet</li>
+        {% endif %}
+    </ul>
+</div>

@@ -39,6 +39,7 @@ async def apply_event_to_trades(db: AsyncSession, event_type: str, payload_json:
             sell_order_id=event.sell_order_id,
             price=event.price,
             quantity=event.quantity,
+            side=event.side,
         )
         db.add(trade)
 

@@ -34,4 +34,5 @@ class TradeProjection(Base):
     sell_order_id = Column(Integer, nullable=False)
     price = Column(Float, nullable=False)
     quantity = Column(Float, nullable=False)
+    side = Column(SqlEnum(OrderSide), nullable=False)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())

@@ -3,18 +3,49 @@
     hx-get="/ui/orderbook"
     hx-trigger="order-submitted, sse:update"
     hx-swap="outerHTML"
+    class="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 border border-gray-200"
 >
-    <h3>Buy Orders</h3>
-    <ul>
-        {% for order in bids %}
-        <li>{{ order.quantity }} @ {{ order.price }}</li>
-        {% endfor %}
-    </ul>
+    <h2 class="text-2xl font-bold text-center mb-4 text-gray-700">
+        📈 Live Order Book
+    </h2>
 
-    <h3>Sell Orders</h3>
-    <ul>
-        {% for order in asks %}
-        <li>{{ order.quantity }} @ {{ order.price }}</li>
-        {% endfor %}
-    </ul>
+    <div class="grid grid-cols-2 gap-6">
+        <!-- Buy Orders -->
+        <div>
+            <h3
+                class="text-xl font-semibold text-green-600 border-b border-green-300 pb-1 mb-2"
+            >
+                Buy Orders
+            </h3>
+            <ul class="space-y-1">
+                {% for order in bids %}
+                <li class="flex justify-between bg-green-50 px-3 py-1 rounded">
+                    <span>{{ order.quantity }}</span>
+                    <span>@ {{ order.price }}</span>
+                </li>
+                {% endfor %} {% if not bids %}
+                <li class="text-gray-400 italic">No buy orders</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Sell Orders -->
+        <div>
+            <h3
+                class="text-xl font-semibold text-red-600 border-b border-red-300 pb-1 mb-2"
+            >
+                Sell Orders
+            </h3>
+            <ul class="space-y-1">
+                {% for order in asks %}
+                <li class="flex justify-between bg-red-50 px-3 py-1 rounded">
+                    <span>{{ order.quantity }}</span>
+                    <span>@ {{ order.price }}</span>
+                </li>
+                {% endfor %} {% if not asks %}
+                <li class="text-gray-400 italic">No sell orders</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
 </div>

@@ -44,6 +44,7 @@ async def try_match_order(db: AsyncSession, new_order_id: int):
             sell_order_id=new_order.order_id if new_order.side == OrderSide.SELL else match_order.order_id,
             price=match_order.price,
             quantity=traded_qty,
+            side=new_order.side,
             version=1
         )
         saved_event = await append_event(db, "OrderMatched", match_event.version, match_event.dict())
