@@ -8,7 +8,7 @@
     <form
         hx-post="/ui/order"
         hx-swap="none"
-        hx-on::after-request="htmx.trigger('#orderbook', 'order-submitted'); this.reset();"
+        hx-on::after-request="this.reset();"
         class="space-y-4"
     >
         <div>

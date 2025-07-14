@@ -5,6 +5,7 @@ from app.models import OrderProjection, OrderSide
 from app.event_store import append_event
 from app.domain_events import OrderMatchedV1
 from app.projections import apply_event_to_order_book, apply_event_to_trades
+from app.sse import broadcast_sse_event
 
 async def try_match_order(db: AsyncSession, new_order_id: int):
     # Get the new order that was just placed
@@ -51,6 +52,15 @@ async def try_match_order(db: AsyncSession, new_order_id: int):
 
         # Apply trade to projections
         await apply_event_to_trades(db, saved_event.event_type, saved_event.payload)
+
+        # Broadcast trade update via SSE
+        await broadcast_sse_event("trade", {
+            "buy_order_id": match_event.buy_order_id,
+            "sell_order_id": match_event.sell_order_id,
+            "price": match_event.price,
+            "quantity": match_event.quantity,
+            "side": match_event.side,
+        })
 
         # Update quantities in memory
         new_order.quantity -= traded_qty

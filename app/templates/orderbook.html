@@ -30,11 +30,51 @@
                 </h2>
                 <div
                     id="orderbook"
-                    hx-get="/ui/orderbook"
-                    hx-trigger="load, order-submitted, sse:update"
-                    hx-swap="outerHTML"
+                    class="sse-reactive max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 border border-gray-200"
                 >
-                    Loading order book...
+                    <h2
+                        class="text-2xl font-bold text-center mb-4 text-gray-700"
+                    >
+                        📈 Live Order Book
+                    </h2>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- Buy Orders -->
+                        <div>
+                            <h3
+                                class="text-xl font-semibold text-green-600 border-b border-green-300 pb-1 mb-2"
+                            >
+                                Buy Orders
+                            </h3>
+                            <div
+                                id="buy-orders"
+                                hx-get="/ui/orderbook/bids"
+                                hx-trigger="load, sse:update"
+                                hx-swap="innerHTML"
+                                hx-vals="js:{ ts: Date.now() }"
+                            >
+                                Loading...
+                            </div>
+                        </div>
+
+                        <!-- Sell Orders -->
+                        <div>
+                            <h3
+                                class="text-xl font-semibold text-red-600 border-b border-red-300 pb-1 mb-2"
+                            >
+                                Sell Orders
+                            </h3>
+                            <div
+                                id="sell-orders"
+                                hx-get="/ui/orderbook/asks"
+                                hx-trigger="load, sse:update"
+                                hx-swap="innerHTML"
+                                hx-vals="js:{ ts: Date.now() }"
+                            >
+                                Loading...
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -48,8 +88,9 @@
                 <div
                     id="trades"
                     hx-get="/ui/trades"
-                    hx-trigger="load, trade-matched, sse:trade"
+                    hx-trigger="load, sse:trade"
                     hx-swap="outerHTML"
+                    hx-vals="js:{ ts: Date.now() }"
                 >
                     Loading trades...
                 </div>
@@ -58,13 +99,30 @@
 
         <script>
             const evtSource = new EventSource("/sse");
-            evtSource.onmessage = () => {
-                htmx.trigger("body", "sse:update");
-                htmx.trigger("body", "sse:trade");
+
+            evtSource.onmessage = (event) => {
+                const payload = JSON.parse(event.data);
+
+                if (payload.type === "order") {
+                    htmx.trigger("#buy-orders", "sse:update");
+                    htmx.trigger("#sell-orders", "sse:update");
+                    // htmx.trigger(".orderbook-section", "sse:update");
+                }
+
+                if (payload.type === "trade") {
+                    // Trigger trade update immediately
+                    htmx.trigger("#trades", "sse:trade");
+
+                    htmx.trigger("#buy-orders", "sse:update");
+                    htmx.trigger("#sell-orders", "sse:update");
+                }
             };
 
-            document.body.addEventListener("order-submitted", () => {
-                console.log("[HTMX] order-submitted triggered");
+            htmx.on("htmx:configRequest", (evt) => {
+                console.log(
+                    "HTMX is about to make a request to:",
+                    evt.detail.path,
+                );
             });
         </script>
     </body>

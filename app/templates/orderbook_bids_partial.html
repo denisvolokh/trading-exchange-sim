@@ -1,0 +1,10 @@
+<ul class="space-y-1">
+    {% for order in bids %}
+    <li class="flex justify-between bg-green-50 px-3 py-1 rounded transition">
+        <span>{{ order.quantity }}</span>
+        <span>@ {{ order.price }}</span>
+    </li>
+    {% endfor %} {% if not bids %}
+    <li class="text-gray-400 italic">No buy orders</li>
+    {% endif %}
+</ul>

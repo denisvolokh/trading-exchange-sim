@@ -9,12 +9,13 @@ from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from app.ui.views import ui_router
 from app.ui.events import sse_router
+from app.sse import sse_endpoint
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(ui_router)
-app.include_router(sse_router)
+# app.include_router(sse_router)
 
 @app.on_event("startup")
 async def startup():
@@ -36,3 +37,7 @@ async def read_order_book(db: AsyncSession = Depends(get_db)):
 @app.get("/trades", response_model=list[TradeEntry])
 async def read_trades(db: AsyncSession = Depends(get_db)):
     return await get_recent_trades(db)
+
+@app.get("/sse")
+async def sse(request: Request):
+    return await sse_endpoint(request)
