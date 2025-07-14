@@ -1,6 +1,10 @@
 <ul class="space-y-1">
     {% for order in asks %}
-    <li class="flex justify-between bg-red-50 px-3 py-1 rounded transition">
+    <li
+        class="order-entry flex justify-between bg-red-50 px-3 py-1 rounded transition"
+        id="order-{{ order.order_id }}"
+        data-order-id="{{ order.order_id }}"
+    >
         <span>{{ order.quantity }}</span>
         <span>@ {{ order.price }}</span>
     </li>
