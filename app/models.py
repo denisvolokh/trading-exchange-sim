@@ -1,11 +1,16 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, Text, DateTime, Enum as SqlEnum
-from sqlalchemy.sql import func
-from app.database import Base
 import enum
+
+from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text
+from sqlalchemy import Enum as SqlEnum
+from sqlalchemy.sql import func
+
+from app.database import Base
+
 
 class OrderSide(str, enum.Enum):
     BUY = "buy"
     SELL = "sell"
+
 
 class EventStore(Base):
     __tablename__ = "event_store"
@@ -16,6 +21,7 @@ class EventStore(Base):
     payload = Column(Text)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
 
+
 class OrderProjection(Base):
     __tablename__ = "order_book"
 
@@ -25,6 +31,7 @@ class OrderProjection(Base):
     price = Column(Float, nullable=False)
     quantity = Column(Float, nullable=False)
     is_active = Column(Boolean, default=True)
+
 
 class TradeProjection(Base):
     __tablename__ = "trades"

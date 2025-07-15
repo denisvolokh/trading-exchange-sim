@@ -1,10 +1,15 @@
 import json
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.models import OrderProjection, TradeProjection, OrderSide
-from app.domain_events import OrderPlacedV1, OrderCancelledV1, OrderMatchedV1
 
-async def apply_event_to_order_book(db: AsyncSession, event_type: str, payload_json: str):
+from app.domain_events import OrderCancelledV1, OrderMatchedV1, OrderPlacedV1
+from app.models import OrderProjection, TradeProjection
+
+
+async def apply_event_to_order_book(
+    db: AsyncSession, event_type: str, payload_json: str
+):
     payload = json.loads(payload_json)
 
     if event_type.startswith("OrderPlaced"):
@@ -14,7 +19,7 @@ async def apply_event_to_order_book(db: AsyncSession, event_type: str, payload_j
             price=event.price,
             quantity=event.quantity,
             side=event.side,
-            is_active=True
+            is_active=True,
         )
         db.add(order)
 
@@ -28,6 +33,7 @@ async def apply_event_to_order_book(db: AsyncSession, event_type: str, payload_j
             order.is_active = False
 
     await db.commit()
+
 
 async def apply_event_to_trades(db: AsyncSession, event_type: str, payload_json: str):
     payload = json.loads(payload_json)

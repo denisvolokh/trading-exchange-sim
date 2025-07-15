@@ -1,7 +1,8 @@
-import pytest
 import httpx
+import pytest
 
 API_URL = "http://localhost:8000"
+
 
 @pytest.mark.asyncio
 async def test_order_matching():
@@ -9,22 +10,12 @@ async def test_order_matching():
         # Reset state if needed (e.g., drop DB or clear projections manually)
 
         # Place SELL order at 100
-        sell_order = {
-            "order_id": 1001,
-            "side": "sell",
-            "price": 100,
-            "quantity": 10
-        }
+        sell_order = {"order_id": 1001, "side": "sell", "price": 100, "quantity": 10}
         res = await client.post("/orders", json=sell_order)
         assert res.status_code == 200
 
         # Place BUY order at 105 (should match)
-        buy_order = {
-            "order_id": 1002,
-            "side": "buy",
-            "price": 105,
-            "quantity": 5
-        }
+        buy_order = {"order_id": 1002, "side": "buy", "price": 105, "quantity": 5}
         res = await client.post("/orders", json=buy_order)
         assert res.status_code == 200
 

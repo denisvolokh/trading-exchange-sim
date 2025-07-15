@@ -1,6 +1,9 @@
-from pydantic import BaseModel
-from app.models import OrderSide
 from datetime import datetime
+
+from pydantic import BaseModel
+
+from app.models import OrderSide
+
 
 class OrderCreateRequest(BaseModel):
     order_id: int
@@ -8,10 +11,12 @@ class OrderCreateRequest(BaseModel):
     price: float
     quantity: float
 
+
 class OrderBookEntry(BaseModel):
     order_id: int
     price: float
     quantity: float
+
 
 class TradeEntry(BaseModel):
     buy_order_id: int

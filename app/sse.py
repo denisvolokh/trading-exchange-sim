@@ -1,15 +1,13 @@
 import asyncio
 import json
+
 from sse_starlette.sse import EventSourceResponse
-from fastapi import Request
 
 clients = []
 
+
 async def broadcast_sse_event(event_type: str, data: dict):
-    msg = json.dumps({
-        "type": event_type,
-        "data": data
-    })
+    msg = json.dumps({"type": event_type, "data": data})
     print(f"[broadcast_sse_event] Sending: {msg}, Clients: {len(clients)}")
 
     for q in clients:

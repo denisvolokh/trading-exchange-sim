@@ -1,7 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
 from app.models import OrderProjection, OrderSide, TradeProjection
 from app.schemas import OrderBookEntry, TradeEntry
+
 
 async def get_order_book(db: AsyncSession) -> dict[str, list[OrderBookEntry]]:
     result = await db.execute(
@@ -11,11 +13,13 @@ async def get_order_book(db: AsyncSession) -> dict[str, list[OrderBookEntry]]:
 
     bids = [
         OrderBookEntry(order_id=o.order_id, price=o.price, quantity=o.quantity)
-        for o in orders if o.side == OrderSide.BUY
+        for o in orders
+        if o.side == OrderSide.BUY
     ]
     asks = [
         OrderBookEntry(order_id=o.order_id, price=o.price, quantity=o.quantity)
-        for o in orders if o.side == OrderSide.SELL
+        for o in orders
+        if o.side == OrderSide.SELL
     ]
 
     # Optionally: sort for display
@@ -23,6 +27,7 @@ async def get_order_book(db: AsyncSession) -> dict[str, list[OrderBookEntry]]:
     asks.sort(key=lambda o: o.price)
 
     return {"bids": bids, "asks": asks}
+
 
 async def get_recent_trades(db: AsyncSession) -> list[TradeEntry]:
     result = await db.execute(
@@ -37,7 +42,7 @@ async def get_recent_trades(db: AsyncSession) -> list[TradeEntry]:
             price=t.price,
             quantity=t.quantity,
             side=t.side,
-            timestamp=t.timestamp
+            timestamp=t.timestamp,
         )
         for t in trades
     ]
