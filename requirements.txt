@@ -11,3 +11,5 @@ pytest
 pytest-asyncio
 python-multipart
 sse-starlette
+humanize
+

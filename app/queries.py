@@ -1,30 +1,31 @@
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 
 from app.models import OrderProjection, OrderSide, TradeProjection
-from app.schemas import OrderBookEntry, TradeEntry
+from app.schemas import TradeEntry
 
 
-async def get_order_book(db: AsyncSession) -> dict[str, list[OrderBookEntry]]:
+async def get_order_book(db: AsyncSession):
     result = await db.execute(
-        select(OrderProjection).where(OrderProjection.is_active.is_(True))
+        select(
+            OrderProjection.side,
+            OrderProjection.price,
+            func.sum(OrderProjection.quantity).label("total_quantity")
+        )
+        .where(OrderProjection.is_active.is_(True))
+        .group_by(OrderProjection.side, OrderProjection.price)
+        .order_by(OrderProjection.side, OrderProjection.price.desc())
     )
-    orders = result.scalars().all()
 
-    bids = [
-        OrderBookEntry(order_id=o.order_id, price=o.price, quantity=o.quantity)
-        for o in orders
-        if o.side == OrderSide.BUY
-    ]
-    asks = [
-        OrderBookEntry(order_id=o.order_id, price=o.price, quantity=o.quantity)
-        for o in orders
-        if o.side == OrderSide.SELL
-    ]
+    bids = []
+    asks = []
 
-    # Optionally: sort for display
-    bids.sort(key=lambda o: o.price, reverse=True)
-    asks.sort(key=lambda o: o.price)
+    for side, price, total_quantity in result:
+        entry = {"price": float(price), "quantity": float(total_quantity)}
+        if side == OrderSide.BUY:
+            bids.append(entry)
+        else:
+            asks.append(entry)
 
     return {"bids": bids, "asks": asks}
 

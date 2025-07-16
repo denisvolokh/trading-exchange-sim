@@ -1,5 +1,7 @@
+from datetime import datetime, timezone
 from uuid import uuid4
 
+import humanize
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
 
@@ -76,18 +78,22 @@ async def submit_order(
 async def ui_trades(request: Request, db=Depends(get_db)):
     trades = await get_recent_trades(db)
 
+    now = datetime.now(timezone.utc)
+
     # Convert trades to dicts for the template
-    trades_data = [
-        {
-            "side": "buy"
-            if t.buy_order_id < t.sell_order_id
-            else "sell",
+    trades_data = []
+    for t in trades:
+        ts = t.timestamp
+        if ts.tzinfo is None:
+            ts = ts.replace(tzinfo=timezone.utc)
+
+        trades_data.append({
+            "side": "buy" if t.buy_order_id < t.sell_order_id else "sell",
             "price": t.price,
             "quantity": t.quantity,
-            "time": "just now"
-        }
-        for t in trades
-    ]
+            "time": humanize.naturaltime(now - ts)
+        })
+
     return templates.TemplateResponse(
         "partials/trades.html", {"request": request, "trades": trades_data}
     )
