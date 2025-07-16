@@ -11,7 +11,6 @@ from app.ui.dependencies import templates
 
 ui_router = APIRouter()
 
-
 @ui_router.get("/ui", response_class=HTMLResponse)
 async def ui_page(request: Request):
     return templates.TemplateResponse("orderbook.html", {"request": request})
@@ -82,10 +81,10 @@ async def ui_trades(request: Request, db=Depends(get_db)):
         {
             "side": "buy"
             if t.buy_order_id < t.sell_order_id
-            else "sell",  # or use actual field if you store side
+            else "sell",
             "price": t.price,
             "quantity": t.quantity,
-            "time": "just now",  # You can add timestamp formatting if needed
+            "time": "just now"
         }
         for t in trades
     ]
