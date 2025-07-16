@@ -13,7 +13,6 @@ app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(ui_router)
-# app.include_router(sse_router)
 
 
 @app.on_event("startup")

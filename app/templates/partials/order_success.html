@@ -1,0 +1,12 @@
+<!-- templates/partials/order_success.html -->
+<div class="text-center space-y-4">
+  <div class="text-green-600 text-lg font-semibold">{{ message }}</div>
+  <button
+    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+    hx-get="/ui/form"
+    hx-target="#order-form-container"
+    hx-swap="innerHTML"
+  >
+    Submit Another Order
+  </button>
+</div>

@@ -1,0 +1,19 @@
+<div class="max-w-md mx-auto mt-8 bg-red-50 border border-red-300 rounded-lg p-6 shadow space-y-4 text-center">
+  <div class="text-red-700 font-semibold text-lg">
+    {{ error }}
+  </div>
+
+  <button
+    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+    hx-get="/ui/form"
+    hx-target="#order-form-container"
+    hx-swap="innerHTML"
+    hx-vals='{
+      "side": "{{ side }}",
+      "price": "{{ price }}",
+      "quantity": "{{ quantity }}"
+    }'
+  >
+    Try Again
+  </button>
+</div>

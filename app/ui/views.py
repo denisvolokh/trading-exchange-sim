@@ -21,7 +21,7 @@ async def ui_page(request: Request):
 async def ui_orderbook_asks(request: Request, db=Depends(get_db)):
     data = await get_order_book(db)
     return templates.TemplateResponse(
-        "orderbook_asks_partial.html",
+        "partials/orderbook_asks.html",
         {"request": request, "asks": data["asks"]},
     )
 
@@ -30,31 +30,45 @@ async def ui_orderbook_asks(request: Request, db=Depends(get_db)):
 async def ui_orderbook_bids(request: Request, db=Depends(get_db)):
     data = await get_order_book(db)
     return templates.TemplateResponse(
-        "orderbook_bids_partial.html",
+        "partials/orderbook_bids.html",
         {"request": request, "bids": data["bids"]},
     )
 
 
 @ui_router.get("/ui/form", response_class=HTMLResponse)
 async def ui_form(request: Request):
-    return templates.TemplateResponse("order_form.html", {"request": request})
+    return templates.TemplateResponse("partials/order_form.html", {"request": request})
 
 
 @ui_router.post("/ui/order")
 async def submit_order(
+    request: Request,
     side: str = Form(...),
     price: float = Form(...),
     quantity: float = Form(...),
     db=Depends(get_db),
 ):
+    if quantity > 999:
+        return templates.TemplateResponse(
+            "partials/order_failure.html",
+            {
+                "request": request,
+                "error": "❌ Quantity must be 999 or less.",
+                "side": side,
+                "price": price,
+                "quantity": quantity,
+            },
+            status_code=200,
+        )
+
     order = OrderCreateRequest(
         order_id=int(uuid4().int >> 96), side=side, price=price, quantity=quantity
     )
     await place_order_command(db, order)
-    return HTMLResponse(
-        content="""
-        <div id="status-message" hx-swap-oob="true">✅ Order submitted!</div>
-        """,
+
+    return templates.TemplateResponse(
+        "partials/order_success.html",
+        {"request": request, "message": "✅ Order submitted!"},
         status_code=200,
     )
 
@@ -76,5 +90,5 @@ async def ui_trades(request: Request, db=Depends(get_db)):
         for t in trades
     ]
     return templates.TemplateResponse(
-        "trades_partial.html", {"request": request, "trades": trades_data}
+        "partials/trades.html", {"request": request, "trades": trades_data}
     )
