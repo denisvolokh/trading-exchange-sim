@@ -3,6 +3,12 @@ name: Deploy to DigitalOcean
 on:
   push:
     branches: [main]
+    paths:
+      - "app/**"
+      - "Dockerfile"
+      - "docker-compose.yml"
+      - "requirements.txt"
+      - ".github/workflows/deploy.yml"
 
 jobs:
   deploy:
