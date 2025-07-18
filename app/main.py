@@ -11,7 +11,6 @@ from app.ui.views import ui_router
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(ui_router)
 
 
